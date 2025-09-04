@@ -26,11 +26,7 @@ def load_models():
     scaler = mlr_data["scaler"]
 
     ann_data = joblib.load("ann_model.joblib")
-    # Prefer legacy H5 model (compatible across TF/Keras versions); fallback to .keras if available
-    try:
-        ann_model = load_model("ann_model.h5", compile=False)
-    except Exception:
-        ann_model = load_model("ann_model.keras", compile=False)
+    ann_model = load_model("ann_model.keras")
     ann_input_shape = ann_data["input_shape"]
 
     return mlr_model, mlr_features, scaler, ann_model, ann_input_shape
@@ -485,15 +481,27 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+import base64
+
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+# encode your logos
+logo1_base64 = get_base64_of_bin_file("logo1.png")
+logo2_base64 = get_base64_of_bin_file("logo2.png")
+
+# banner HTML
 st.markdown(
     f"""
     <div class="header-banner">
-        <img src="{logo1_src}" alt="logo1" class="logo-left">
+        <img src="data:image/png;base64,{logo1_base64}" alt="logo1" class="logo-left">
         <div class="text-content">
             <h1>TAKORADI TECHNICAL UNIVERSITY</h1>
             <h3>Student Final CGPA Predictor</h3>
         </div>
-        <img src="{logo2_src}" alt="logo2" class="logo-right">
+        <img src="data:image/png;base64,{logo2_base64}" alt="logo2" class="logo-right">
     </div>
     """,
     unsafe_allow_html=True,
